@@ -1,10 +1,10 @@
-# Package name
-Package Name
+# Gracchus
+Gracchus
 <pre>
-  pip install independent-machine
+  pip install gracchus
 </pre>
 Then:
 ```Python
   # Python
-  import independent_machine
+  import gracchus
 ```
