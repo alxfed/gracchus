@@ -63,10 +63,10 @@ def response(incoming, **kwargs):
             id = the["id"]
             output = the["output"]
             if len(output) > 1:
-                summary = output[0]['summary']
+                summary = output.pop(0)['summary']
                 for piece in summary:
                     reasoning_content += piece['text']
-            reply = output[1]['content']
+            reply = output.pop(0)['content']
             for chunk in reply:
                 content += chunk['text']
         else:
