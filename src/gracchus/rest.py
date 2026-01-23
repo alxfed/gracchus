@@ -62,9 +62,10 @@ def response(incoming, **kwargs):
             the = answer.json()
             id = the["id"]
             output = the["output"]
-            summary = output[0]['summary']
-            for piece in summary:
-                reasoning_content += piece['text']
+            if len(output) > 1:
+                summary = output[0]['summary']
+                for piece in summary:
+                    reasoning_content += piece['text']
             reply = output[1]['content']
             for chunk in reply:
                 content += chunk['text']
