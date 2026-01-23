@@ -32,10 +32,7 @@ def response(incoming, **kwargs):
             presence_penalty = -2.0 to 2.0
             max_tokens      = number of tokens
     """
-    reasoning = {
-        "effort": "high",
-        "summary": "detailed"
-    }
+
     text = {
         "format": {
             "type": "text"
@@ -45,9 +42,9 @@ def response(incoming, **kwargs):
         "model":                kwargs.get("model", response_model),
         "input":                kwargs.get("input", incoming),
         "instructions":         kwargs.get("instructions", None),
-        "max_output_tokens":    kwargs.get("max_tokens", 10000),
+        "max_output_tokens":    kwargs.get("max_tokens", 5),
         "previous_response_id": kwargs.get("previous_response_id", None),
-        "reasoning":            kwargs.get("reasoning", reasoning),
+        "reasoning":            kwargs.get("reasoning", None),
         "temperature":          kwargs.get("temperature", 1.0),
         "top_p":                kwargs.get("top_p", None),
         "text":                 kwargs.get("text", text)
@@ -103,5 +100,4 @@ def models():
 
 if __name__ == '__main__':
     # mod = models()
-    respa = response("What model are you?")
-    print('ok')
+    print('You have launched main')
