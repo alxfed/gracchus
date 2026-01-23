@@ -5,11 +5,11 @@
 This source code is licensed under the license found in the
 LICENSE file in the root directory of this source tree.
 """
-from typing import List, Dict
 from os import environ
 import requests
 # from .adapters import prepared_grch_messages, format_grch_output
 
+# load_env()
 
 api_key             = environ.get("XAI_API_KEY")
 api_base            = environ.get("XAI_API_BASE", "https://api.x.ai/v1")
@@ -23,19 +23,14 @@ headers = {
 }
 
 
-def response(input, **kwargs) -> List:
+def response(incoming, **kwargs):
     """A completions endpoint call through requests.
         kwargs:
             temperature     = 0 to 1.0
             top_p           = 0.0 to 1.0
-            n               = 1 to ...
-            best_of         = 4
             frequency_penalty = -2.0 to 2.0
             presence_penalty = -2.0 to 2.0
             max_tokens      = number of tokens
-            logprobs        = number up to 5
-            stop            = ["stop"]  array of up to 4 sequences
-            logit_bias      = map token: bias -1.0 to 1.0 (restrictive -100 to 100)
     """
     reasoning = {
         "effort": "high",
@@ -48,35 +43,46 @@ def response(input, **kwargs) -> List:
     }
     json_data = {
         "model":                kwargs.get("model", response_model),
-        "input":                kwargs.get("input", input),
+        "input":                kwargs.get("input", incoming),
         "instructions":         kwargs.get("instructions", None),
-        "max_output_tokens":    kwargs.get("max_tokens", 5),
+        "max_output_tokens":    kwargs.get("max_tokens", 10000),
         "previous_response_id": kwargs.get("previous_response_id", None),
         "reasoning":            kwargs.get("reasoning", reasoning),
-        "temperature":      kwargs.get("temperature", 1.0),
-        "top_p":            kwargs.get("top_p", None),
-        "text":             kwargs.get("text", text)
+        "temperature":          kwargs.get("temperature", 1.0),
+        "top_p":                kwargs.get("top_p", None),
+        "text":                 kwargs.get("text", text)
     }
-    responses = []
     try:
-        response = requests.post(
-            f"{api_base}/completions",
+        content = ''
+        reasoning_content = ''
+        id = ''
+        answer = requests.post(
+            f"{api_base}/responses",
             headers=headers,
             json=json_data,
         )
-        if response.status_code == requests.codes.ok:
-            for choice in response.json()['choices']:
-                responses.append(choice)
+        if answer.status_code == requests.codes.ok:
+            the = answer.json()
+            id = the["id"]
+            output = the["output"]
+            summary = output[0]['summary']
+            for piece in summary:
+                reasoning_content += piece['text']
+            reply = output[1]['content']
+            for chunk in reply:
+                content += chunk['text']
         else:
-            print(f"Request status code: {response.status_code}")
-        return responses
+            print(f"Request status code: {answer.status_code}")
+
+        return content, reasoning_content, id
+
     except Exception as e:
         print("Unable to generate Completions response")
         print(f"Exception: {e}")
-        return responses
+        return '', '', ''
 
 
-def models() -> List:
+def models():
     """Returns a list of available models."""
     models_list = []
     try:
@@ -96,6 +102,6 @@ def models() -> List:
 
 
 if __name__ == '__main__':
-    mod = models()
-
+    # mod = models()
+    respa = response("What model are you?")
     print('ok')
